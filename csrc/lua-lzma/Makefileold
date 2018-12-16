@@ -1,0 +1,25 @@
+all: lzma.dll
+
+lzma.dll: LzFind.o LzAlloc.o LzmaDec.o LzmaEnc.o LzmaLib.o llzma.o
+	gcc -O -shared -fPIC -o lzma.dll llzma.o LzmaLib.o LzmaEnc.o LzmaDec.o LzFind.o LzAlloc.o -L"C:\Users\theco\projects\lua-power-cherrypicked\bin\mingw64" -llua51
+
+LzFind.o: LzFind.c
+	gcc -O2 -c LzFind.c 
+LzAlloc.o: LzAlloc.c
+	gcc -O2 -c LzAlloc.c 
+LzmaDec.o: LzmaDec.c
+	gcc -O2 -c LzmaDec.c 
+LzmaEnc.o: LzmaEnc.c
+	gcc -O2 -c LzmaEnc.c 
+LzmaLib.o: LzmaLib.c
+	gcc -O2 -c LzmaLib.c 
+llzma.o:   llzma.c
+	gcc -IC:\Users\theco\projects\lua-power-cherrypicked\csrc\luajit\src\src -O2 -c -o llzma.o llzma.c
+clean:
+	del lzma.dll
+	del llzma.o
+	del LzmaLib.o
+	del LzmaEnc.o
+	del LzmaDec.o
+	del LzFind.o
+	del LzAlloc.o

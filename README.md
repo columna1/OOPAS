@@ -32,6 +32,10 @@ Libraries included in this repo:
     - possibly how difficulty is calculated (strains etc)
   - modifiers
 
+## Dependencies
+
+-none? yet...
+
 ## Future plans
 
 Stuff that has already been written, just needs to be cleaned/re-written:
@@ -52,11 +56,12 @@ Stuff that has already been written, just needs to be cleaned/re-written:
 To do: (please help 🆘)
 
 - [ ] Write/design API
+- [ ] testing
 - [ ] Make more accurate! please help!
 
 ## How to use
 
---tbd
+compile custom lua-lzma source
 
 ## Related repositories
 
@@ -65,3 +70,4 @@ To do: (please help 🆘)
   - browser visualizations
 - [oppai-ng](https://github.com/Francesco149/oppai-ng)
 - [ojsama](https://github.com/Francesco149/ojsama)
+- [lua-lzma](https://github.com/rainfiel/lua-lzma)
