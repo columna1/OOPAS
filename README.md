@@ -17,7 +17,7 @@ Libraries included in this repo:
 - Replay reader/parser
 - Play scoring (the star of this repo)
   - UR/error metrics (easy)
-  - 300s/100s/50s/misses gotten and when 
+  - 300s/100s/50s/misses gotten and when
   - slider breaks, what/when and why
   - "realtime" scoring? (for use in situations where you only have replay data up to a certain point for ex. spectating? *hint)
 
