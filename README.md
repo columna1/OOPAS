@@ -16,6 +16,9 @@ Libraries included in this repo:
   -PP calculator (port of [oppai-ng](https://github.com/Francesco149/oppai-ng))
 - Replay reader/parser
 - Play scoring (the star of this repo)
+  - UR/error metrics (easy)
+  - 300s/100s/50s/misses gotten and when
+  - slider breaks, what/when and why
 
 ## Future plans
 
