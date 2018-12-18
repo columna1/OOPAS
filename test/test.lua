@@ -1,6 +1,6 @@
-local vec2 = require("../vec2")
-local bin = require("../binRead")
-local replayReader = require("../readReplay")
+local vec2 = require("vec2")
+local bin = require("binRead")
+local replayReader = require("readReplay")
 
 --vec2 tests
 

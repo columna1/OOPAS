@@ -2,25 +2,6 @@ local lzma = require("lzma")
 local reader = require("binRead")
 require("bit")
 
-local file;
-
-function readNumber(x,num)--little endian
-	local sum = 0
-	for i = 0,x-1 do
-		sum = sum + bit.lshift(string.byte(num:sub(i+1,i+1)),8*i)
-	end
-	return sum
-end
-
-function hex_dump(buf)
-  for i=1,math.ceil(#buf/16) * 16 do
-	 if (i-1) % 16 == 0 then io.write(string.format('%08X  ', i-1)) end
-	 io.write( i > #buf and '   ' or string.format('%02X ', buf:byte(i)) )
-	 if i %  8 == 0 then io.write(' ') end
-	 if i % 16 == 0 then io.write( buf:sub(i-16+1, i):gsub('%c','.'), '\n' ) end
-  end
-end
-
 local function lzma_format(data)--transform standard lzma files to a format the library understands (shuffle arround the header)
 --	+------------+----+----+----+----+--+--+--+--+--+--+--+--+
 --	| Properties |  Dictionary Size  |   Uncompressed Size   |
