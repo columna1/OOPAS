@@ -1,6 +1,7 @@
 local vec2 = require("vec2")
 local bin = require("binRead")
 local replayReader = require("readReplay")
+local mapReader = require("readmap")
 
 --vec2 tests
 
@@ -25,3 +26,9 @@ local replay = replayReader(io.open("test/columna1 - Nekomata Master - Far east 
 print(replay.player)
 print("https://osu.ppy.sh/web/osu-getreplay.php?c="..replay.onlineID.."&m=0")
 print(replay.combo)
+
+--map parsing test
+print()
+map = mapReader.new()
+local b = io.open("test/358273.osu","r")
+map:parse(b)

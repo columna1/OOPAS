@@ -2,6 +2,8 @@ local lzma = require("lzma")
 local reader = require("binRead")
 require("bit")
 
+--this is just a simple* file reader, more advanced things can be done with your own reader
+
 local function lzma_format(data)--transform standard lzma files to a format the library understands (shuffle arround the header)
 --	+------------+----+----+----+----+--+--+--+--+--+--+--+--+
 --	| Properties |  Dictionary Size  |   Uncompressed Size   |
