@@ -6,6 +6,7 @@ local mapReader = require("readmap")
 --vec2 tests
 
 --file read tests
+print(os.clock())
 local f1 = bin.new("one")
 print(f1.file)
 local f2 = bin.new("sentence")
@@ -28,7 +29,8 @@ print("https://osu.ppy.sh/web/osu-getreplay.php?c="..replay.onlineID.."&m=0")
 print(replay.combo)
 
 --map parsing test
-print()
+print(os.clock())
 map = mapReader.new()
 local b = io.open("test/358273.osu","r")
 map:parse(b)
+print(os.clock())
