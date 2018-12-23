@@ -73,17 +73,17 @@ function map:parseDifficultyLine(line)
 	end
 end
 
-function map:findMsPerBeat(ms)
+function map:findTimingPoint(ms)
 	for i = 1,#self.timingPoints do
 		if self.timingPoints[i].time == ms then
-			return self.timingPoints[i].inheritedMsPerBeat
+			return self.timingPoints[i]
 		end
 		if self.timingPoints[i].time > ms then
-			return self.timingPoints[i-1].inheritedMsPerBeat
+			return self.timingPoints[i-1]
 		end
 	end
 	--it's probably the last timing point
-	return self.timingPoints[#self.timingPoints].inheritedMsPerBeat
+	return self.timingPoints[#self.timingPoints]
 end
 
 function map:parseHitObject(line)
@@ -98,10 +98,14 @@ function map:parseHitObject(line)
 	elseif bit32.band(obj.type,2) > 0 then--slider
 		--x,y,time,type,hitSound,sliderType|curvePoints,repeat,pixelLength,edgeHitsounds,edgeAdditions,extras
 		obj.type = "slider"
-		obj.length = sl[8]
-		obj.duration = obj.length / (100 * self.sliderMultiplier) * self:findMsPerBeat(obj.time)
+		local timingPoint = self:findTimingPoint(obj.time)
+		obj.length = tonumber(sl[8])
+		obj.duration = obj.length / (100 * self.sliderMultiplier) * timingPoint.inheritedMsPerBeat
+		obj.repeats = tonumber(sl[7])
 		--calculate slider path and ticks
-		--obj.path = sliderCalc.calculatePath(sl[6],obj.pos)
+		--slider is passed in by reference since that's how tables work in lua
+		--this is weird and I don't like it but it's performant..
+		sliderCalc.calculatePath(sl[6],obj,timingPoint.msPerBeat,self.sliderTickRate)
 	end
 	table.insert(self.hitObjects,obj)
 end

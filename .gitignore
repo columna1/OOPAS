@@ -1,2 +1,4 @@
 *-old.lua
 *.dll
+run.bat
+debugger.lua

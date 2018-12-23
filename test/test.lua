@@ -2,6 +2,9 @@ local vec2 = require("vec2")
 local bin = require("binRead")
 local replayReader = require("readReplay")
 local mapReader = require("readmap")
+--dbg = require("debugger")
+
+require("socket")
 
 --vec2 tests
 
@@ -29,8 +32,10 @@ print("https://osu.ppy.sh/web/osu-getreplay.php?c="..replay.onlineID.."&m=0")
 print(replay.combo)
 
 --map parsing test
-print(os.clock())
+local f = socket.gettime()
 map = mapReader.new()
 local b = io.open("test/358273.osu","r")
 map:parse(b)
-print(os.clock())
+local s = socket.gettime()
+print(math.floor((s-f)*1000).."ms")
+--print(socket.gettime())
