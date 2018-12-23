@@ -47,9 +47,9 @@ Stuff that has already been written, just needs to be cleaned/re-written:
   - [ ] sliders
   - [ ] combo
   - [ ] score
-- [ ] Slider parsing
-  - [ ] path generation
-- [ ] Beatmap parsing
+- [x] Slider parsing
+  - [x] path generation
+- [x] Beatmap parsing
   - [ ] error reporting
 - [ ] Difficulty / PP calculation
 
