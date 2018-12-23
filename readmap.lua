@@ -105,6 +105,7 @@ function map:parseHitObject(line)
 		--calculate slider path and ticks
 		--slider is passed in by reference since that's how tables work in lua
 		--this is weird and I don't like it but it's performant..
+		dbg()
 		sliderCalc.calculatePath(sl[6],obj,timingPoint.msPerBeat,self.sliderTickRate)
 	end
 	table.insert(self.hitObjects,obj)

@@ -2,7 +2,7 @@ local vec2 = require("vec2")
 local bin = require("binRead")
 local replayReader = require("readReplay")
 local mapReader = require("readmap")
---dbg = require("debugger")
+dbg = require("debugger")
 
 require("socket")
 

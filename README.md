@@ -50,7 +50,7 @@ Stuff that has already been written, just needs to be cleaned/re-written:
 - [x] Slider parsing
   - [x] path generation
 - [x] Beatmap parsing
-  - [ ] error reporting
+  - [ ] error reporting (without error()/crashing)
 - [ ] Difficulty / PP calculation
 
 To do: (please help 🆘)
@@ -61,6 +61,7 @@ To do: (please help 🆘)
 
 ## How to use
 
+get luajit
 compile custom lua-lzma source
 
 ## Related repositories
