@@ -62,7 +62,8 @@ To do: (please help 🆘)
 ## How to use
 
 get luajit
-compile custom lua-lzma source
+compile custom [lua-lzma](https://github.com/columna1/lua-lzma) source
+run ```lua test/test.lua```
 
 ## Related repositories
 
