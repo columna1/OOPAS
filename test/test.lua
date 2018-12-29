@@ -2,6 +2,7 @@ local vec2 = require("vec2")
 local bin = require("binRead")
 local replayReader = require("readReplay")
 local mapReader = require("readmap")
+local score = require("score")
 --dbg = require("debugger")
 
 require("socket")
@@ -41,4 +42,5 @@ print(math.floor((s-f)*1000).."ms")
 --print(socket.gettime())
 
 --scoring
-
+local sc = score.new(map,replay)
+print(sc.map.Title)
