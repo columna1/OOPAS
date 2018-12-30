@@ -1,11 +1,11 @@
 local vec2 = require("vec2")
 local bin = require("binRead")
-local replayReader = require("readReplay")
+local replayReader = require("readreplay")
 local mapReader = require("readmap")
 local score = require("score")
 --dbg = require("debugger")
 
-require("socket")
+local socket = require("socket")
 
 --vec2 tests
 
