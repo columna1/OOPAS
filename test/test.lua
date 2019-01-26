@@ -3,6 +3,7 @@ local bin = require("binRead")
 local replayReader = require("readreplay")
 local mapReader = require("readmap")
 local score = require("score")
+local stream = require("replaystream")
 --dbg = require("debugger")
 
 local socket = require("socket")
@@ -31,6 +32,11 @@ local replay = replayReader(io.open("test/columna1 - Nekomata Master - Far east 
 print(replay.player)
 print("https://osu.ppy.sh/web/osu-getreplay.php?c="..replay.onlineID.."&m=0")
 print(replay.combo)
+--print(replay.uncompressedData)
+
+--replay stream test
+local rpstream = stream.wrap(replay)
+
 
 --map parsing test
 local f = socket.gettime()
@@ -44,3 +50,4 @@ print(math.floor((s-f)*1000).."ms")
 --scoring
 local sc = score.new(map,replay)
 print(sc.map.Title)
+sc:judgeAll()

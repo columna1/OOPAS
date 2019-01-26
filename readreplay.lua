@@ -39,7 +39,8 @@ local function readReplay(input)
 		replay.time = {read:readByte(),read:readByte(),read:readByte(),read:readByte(),read:readByte(),read:readByte(),read:readByte(),read:readByte()}--time stamp
 		local len = read:readInt()--length of compressed replay
 		replay.compressedData = read:readBytes(len)--compressed replay
-		replay.uncompressedData = lzma.uncompress(lzma_format(replay.compressedData))
+		--replay.uncompressedData = lzma.uncompress(lzma_format(replay.compressedData))
+		replay.uncompressedData = lzma.uncompress(replay.compressedData)
 		replay.onlineID = read:readLong()--score's online id
 	else
 		error("Couldn't open replay file: "..err)

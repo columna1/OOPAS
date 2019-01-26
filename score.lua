@@ -1,39 +1,3 @@
---[[
-How to use:
-make a new score object, this has to include the replay and map
-the replay and map can be updated once the score is created
-as they are only passed in by reference
-
-The score HAS to be processed in object order. certain situations like
-notelock can't be accounted for otherwise. *there may be some way to 
-disable this and take care of edge cases for things like when you
-only have part of a replay (spectating for example)
-
-If you have all of a replay already loaded and ready to judge
-then call score:judgeAll()
-this will run through all the objects and jugde based on the
-replay.
-If you don't have all of the replay you can either call
-score:judgeNextObject (judges the next unjudged object)
-or 
-score:judgeReplaySoFar (judges everything that can be in the replay)
--this function looks at the replay, finds the last object that *could*
-be hit and judges up to that point
-
-*possible way to judge partial replays
-*set all needed info in the score directly
-score.currentObject = x
-score.totalScore = x
-score.maxCombo = x
-etc...
-score:judgeNextObject()
-
-Judging functions will act upon it's internal state. use that to update
-any relivant information
-
-perhapse judging functions should return info about what has been scored?
-]]
-
 local vec2 = require("vec2")
 
 local score = {}
@@ -46,6 +10,10 @@ function score:reset()--resets all accumulated statistics
 	self.oneHundreds = 0
 	self.misses = 0
 	self.currentObject = 0
+end
+
+function score:findReplayPoint(ms)
+
 end
 
 --[[
@@ -91,7 +59,7 @@ for original difficulty values only, (before mods)
 
 ]]--
 
-function score:judgeCircle()
+function score:judgeCircle(o)
 	
 end
 
@@ -140,14 +108,21 @@ function score:judgeSlider()
 
 end
 
-function score:judgeNextObject()
+function score:judgeNextObject(objnum)
 	
 end
 
+
 --this runs through all the objects in the map and judges them all.
 function score:judgeAll()
+	self:reset()
 	for o = 1,#self.map.hitObjects do
-		
+		local object = self.map.hitObjects[o]
+		if object.type == "slider" then
+			self:judgeSlider(o)
+		else
+			self:judgeCircle(o)
+		end
 	end
 end
 
