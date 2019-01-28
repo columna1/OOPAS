@@ -1,5 +1,7 @@
 local readReplay = require("readreplay")
+local vec2 = require("vec2")
 require("util")
+require("bit")
 
 local prefile = {}
 local replay = {}
@@ -11,14 +13,13 @@ local function search(list,find)--simple binary search
 	local last = 0
 	local itt = 0
 	while L <= #list do
-		print("s")
 		itt = itt + 1
 		local m = math.floor((L + R)/2)
 		if last == m then
-			assert(list[m][1] <= find and list[m+1][1]>=find,"this search is dumb")
-			local dif1 = math.abs(list[m+1][1]-find)
-			local dif2 = math.abs(list[m  ][1]-find)
-			local dif3 = math.abs(list[m-1][1]-find)
+			assert(list[m].time <= find and list[m+1].time>=find,"this search is dumb")
+			local dif1 = math.abs(list[m+1].time-find)
+			local dif2 = math.abs(list[m  ].time-find)
+			local dif3 = math.abs(list[m-1].time-find)
 			if dif1 < dif2 then
 				return m+1
 			elseif dif3 < dif2 then
@@ -26,15 +27,19 @@ local function search(list,find)--simple binary search
 			else
 				return m
 			end
-		elseif list[m][1] < find then
+		elseif list[m].time < find then
 			L = m + 1
-		elseif list[m][1] > find then
+		elseif list[m].time > find then
 			R = m - 1
-		elseif list[m][1] == find then
+		elseif list[m].time == find then
 			return m
 		end
 		last = m
 	end
+end
+
+function replay:search(ms)
+	return search(self.events,ms)
 end
 
 function replay:currentEvent()
@@ -68,9 +73,17 @@ function prefile.wrap(rawReplay)
 	events = self.uncompressedData:split(",")
 	local time = 0
 	for i = 1,#events do
-		events[i] = events[i]:split("|")
-		time = time + events[i][1]
-		events[i][1] = time
+		--events[i] = events[i]:split("|")
+		local event = events[i]:split("|")
+		event.dms = tonumber(event[1])
+		time = time + event.dms
+		event.time = time
+		event.pos = vec2(tonumber(event[2]),tonumber(event[3]))
+		event.keys = tonumber(event[4])
+		if bit.band(event.keys,0x5) > 0 then event.k1 = true end
+		if bit.band(event.keys,0xA) > 0 then event.k2 = true end
+		--events[i][1] = time
+		events[i] = event
 	end
 	--events in a replay shouldn't be out of order
 	--but events can have negative delta times

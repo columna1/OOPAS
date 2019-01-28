@@ -58,14 +58,27 @@ function map:parseTimingPoint(line)
 	table.insert(self.timingPoints,tp)
 end
 
+function difficultyrange(d,min,mid,max)
+	if d > 5 then return mid + (max - mid) * (d - 5) / 5 end
+	if d < 5 then return mid - (mid - min) * (5 - d) / 5 end
+	return mid
+end
+
 function map:parseDifficultyLine(line)
 	local s,_ = line:find(":")
 	if s then
 		local value = line:sub(1,s-1)
 		if value == "ApproachRate" then self.ar = tonumber(line:sub(s+1))
-		elseif value == "CircleSize" then self.cs = tonumber(line:sub(s+1))
+		elseif value == "CircleSize" then
+			self.cs = tonumber(line:sub(s+1))
+			self.circleRadius = (-9*self.cs+109)/2
 		elseif value == "HPDrainRate" then self.hp = tonumber(line:sub(s+1))
-		elseif value == "OverallDifficulty" then self.od = tonumber(line:sub(s+1))
+		elseif value == "OverallDifficulty" then 
+			self.od = tonumber(line:sub(s+1))
+			self.odms    = math.floor(difficultyrange(self.od,200,150,100))
+			self.odms50  = self.odms
+			self.odms100 = math.floor(difficultyrange(self.od,140,100,60 ))
+			self.odms300 = math.floor(difficultyrange(self.od,80 ,50 ,20 ))
 		elseif value == "SliderMultiplier" then self.sliderMultiplier = tonumber(line:sub(s+1))
 		elseif value == "SliderTickRate" then self.sliderTickRate = tonumber(line:sub(s+1))
 		elseif value == "StackLeniency" then self.stackLeniency = tonumber(line:sub(s+1))

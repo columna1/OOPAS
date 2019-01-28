@@ -35,6 +35,19 @@ local function readReplay(input)
 		replay.combo = read:readShort()--max combo
 		replay.fc = read:readBool()--fc combo
 		replay.mods = read:readInt()--mods
+		
+		--split up mods to make things easier for later
+		replay.emods = {}
+		replay.emods.nf = bit.band(replay.mods,1   ) > 0
+		replay.emods.ez = bit.band(replay.mods,2   ) > 0
+		replay.emods.hd = bit.band(replay.mods,8   ) > 0
+		replay.emods.hr = bit.band(replay.mods,16  ) > 0
+		replay.emods.dt = bit.band(replay.mods,64  ) > 0
+		replay.emods.rl = bit.band(replay.mods,128 ) > 0
+		replay.emods.ht = bit.band(replay.mods,256 ) > 0
+		replay.emods.fl = bit.band(replay.mods,1024) > 0
+		replay.emods.so = bit.band(replay.mods,4096) > 0
+		
 		replay.graph = read:readString()--life bar graph csv pairs
 		replay.time = {read:readByte(),read:readByte(),read:readByte(),read:readByte(),read:readByte(),read:readByte(),read:readByte(),read:readByte()}--time stamp
 		local len = read:readInt()--length of compressed replay
