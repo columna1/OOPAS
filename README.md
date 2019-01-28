@@ -42,7 +42,7 @@ Stuff that has already been written, just needs to be cleaned/re-written:
 
 - [ ] Write/design new scoring system (current spaghetti system won't cut it 😕)
 - [ ] scoring
-  - [ ] circles/slider heads
+  - [x] circles/slider heads
   - [ ] spinners
   - [ ] sliders
   - [ ] combo
@@ -61,9 +61,18 @@ To do: (please help 🆘)
 
 ## How to use
 
-get luajit
-compile custom [lua-lzma](https://github.com/columna1/lua-lzma) source
-run ```lua test/test.lua```
+Get [luajit](http://luajit.org/). You can just download and extract the binary somewhere
+
+compile custom [lua-lzma](https://github.com/columna1/lua-lzma) source and place it into the project directory  
+*you may have to edit the make file
+
+```shell
+cd lua-lzma/src
+make
+cp lzma.so* somewhere/OOPAS/
+```
+
+run ```luajit test/test.lua```
 
 ## Related repositories
 
