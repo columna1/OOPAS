@@ -28,3 +28,42 @@ function printTable(tabl, wid)
 		end 
 	end 
 end
+
+function round(a)
+	a = a * 100
+	a = a + 0.5
+	return math.floor(a)/100
+end
+
+function cull(tab,fun)
+	local newtab = {}
+	for i = 1,#tab do
+		if not fun(tab[i]) then
+			table.insert(newtab,tab[i])
+		end
+	end
+	return newtab
+end
+
+function average(tab)
+	t = 0
+	for i = 1,#tab do
+		t = t + tab[i]
+	end
+	return math.floor(((t/#tab)*100)+0.5)/100
+end
+
+function standardDeviation(tab)
+	local t = 0
+	for i = 1,#tab do
+		t = t + tab[i]
+	end
+	mean = t/#tab
+	t = 0
+	for i = 1,#tab do
+		t = t + ((tab[i]-mean)^2)
+	end
+	t = t/#tab
+	t = math.sqrt(t)
+	return t
+end

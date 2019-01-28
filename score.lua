@@ -1,40 +1,7 @@
---[[
-How to use:
-make a new score object, this has to include the replay and map
-the replay and map can be updated once the score is created
-as they are only passed in by reference
-
-The score HAS to be processed in object order. certain situations like
-notelock can't be accounted for otherwise. *there may be some way to 
-disable this and take care of edge cases for things like when you
-only have part of a replay (spectating for example)
-
-If you have all of a replay already loaded and ready to judge
-then call score:judgeAll()
-this will run through all the objects and jugde based on the
-replay.
-If you don't have all of the replay you can either call
-score:judgeNextObject (judges the next unjudged object)
-or 
-score:judgeReplaySoFar (judges everything that can be in the replay)
--this function looks at the replay, finds the last object that *could*
-be hit and judges up to that point
-
-*possible way to judge partial replays
-*set all needed info in the score directly
-score.currentObject = x
-score.totalScore = x
-score.maxCombo = x
-etc...
-score:judgeNextObject()
-
-Judging functions will act upon it's internal state. use that to update
-any relivant information
-
-perhapse judging functions should return info about what has been scored?
-]]
-
 local vec2 = require("vec2")
+local rps = require("replaystream")
+require("bit")
+require("util")
 
 local score = {}
 local newScore = {}
@@ -46,6 +13,125 @@ function score:reset()--resets all accumulated statistics
 	self.oneHundreds = 0
 	self.misses = 0
 	self.currentObject = 0
+	self.isHit = {}
+
+	--temporary
+	self.hitErrors = {}
+end
+
+function isInRad(pos1,pos2,rad,radMult)
+	--find distance
+	if not radMult then radMult = 1 end
+	--local distance = math.sqrt(math.abs(x1-x2)^2+math.abs(y1-y2)^2)
+	local distance = math.abs((pos1-pos2).length)
+	return distance <= (rad*radMult)
+end
+
+--find the first click from the between the given indexes
+function score:findClick(startInd,endInd)
+	local lk1,lk2 = false,false
+	if startInd > 1 then
+		lk1,lk2 = self.replay.events[startInd-1].k1,self.replay.events[startInd-1].k2
+	end	
+	for i = startInd,endInd do
+		local k1,k2 = self.replay.events[i].k1,self.replay.events[i].k2
+		local ret = 0
+		if k1 and not lk1 then
+			--return i,1
+			ret = ret + 1
+		end
+		if k2 and not lk2 then
+			--return i,2
+			ret = ret + 2
+		end
+		if ret > 0 then
+			return i,ret
+		end
+		lk1,lk2 = k1,k2
+	end
+	return false,0
+end
+--t=0
+--most of the logic for judging circles/slider heads because they are so similar
+function score:judgeHead(o)
+	--find the first click within the judge window
+	--local firstReplayPoint = self.replay:search(self.map.hitObjects[o].time-self.map.odms)
+	local firstReplayPoint = -1
+	local lastReplayPoint = self.replay:search(self.map.hitObjects[o].time+self.map.odms)
+
+	if o > 1 then
+		if self.isHit[o-1] then
+			if self.isHit[o-1].time > self.map.hitObjects[o].time-self.map.odms then
+				--start searching from where the last note was hit since we can't
+				--count that for our current note
+				firstReplayPoint = self.replay:search(self.isHit[o-1].time)+1
+			end
+		end
+	end
+	if firstReplayPoint == -1 then
+		firstReplayPoint = self.replay:search(self.map.hitObjects[o].time-self.map.odms)
+	end
+
+	local function checkHit(point)
+		if isInRad(self.map.hitObjects[o].pos,point.pos,self.map.circleRadius) then
+			--we have hit the circle
+			local hitError = point.time-self.map.hitObjects[o].time
+			return true
+		end
+	end
+	local function getscore(ms)--only ever called if it's been confirmed hit
+		ms = math.abs(ms)
+		if ms < self.map.odms300 then
+			return 300
+		elseif ms < self.map.odms100 then
+			return 100
+		else
+			return 50
+		end
+	end
+	
+	res,key = self:findClick(firstReplayPoint,lastReplayPoint)
+	firstReplayPoint = res + 1
+	--if res == false then print("didn't see click "..o) end
+	while res ~= false do
+		local point = self.replay.events[res]
+		--check to see if the last object has been hit, if it has been hit
+		--and when, make sure it's been hit before we count this one as hit
+		if o > 1 then
+			if self.map.hitObjects[o-1].time+self.map.odms > 
+				self.map.hitObjects[o].time-self.map.odms then
+				--print(self.isHit[o],point.time,0)
+				if self.isHit[o-1] then
+					--print(o-1)
+					if self.isHit[o-1].time < point.time then
+						if checkHit(point) then
+							local he = point.time-self.map.hitObjects[o].time
+							return he,getscore(he),point.time
+						else
+							--print("click missed")
+						end
+					end
+				else
+					--print("last was not hit "..t,o-1)
+					--t = t + 1
+				end
+			else
+				if checkHit(point) then
+					local he = point.time-self.map.hitObjects[o].time
+					return he,getscore(he),point.time
+				end
+			end
+		else
+			if checkHit(point) then
+				local he = point.time-self.map.hitObjects[o].time
+				return he,getscore(he),point.time
+			end
+		end
+		res,key = self:findClick(firstReplayPoint,lastReplayPoint)
+		firstReplayPoint = res + 1
+	end
+	--print("miss :(")
+	return false
 end
 
 --[[
@@ -91,8 +177,16 @@ for original difficulty values only, (before mods)
 
 ]]--
 
-function score:judgeCircle()
-	
+function score:judgeCircle(o)
+	local hitError,score,time = self:judgeHead(o)
+	if hitError then
+		table.insert(self.hitErrors,hitError)
+		self.isHit[o] = {}
+		--print("hit",o,time)
+		self.isHit[o].time = time
+	else
+		--print("miss "..o)
+	end
 end
 
 --[[
@@ -136,21 +230,43 @@ Slider Heads, slider repeats, and slider ends all give a fixed 30 points towards
 the score. Slider ticks give a fixed 10 points. After the slider ends and the 
 score is found, the score is treated like a cirle and added onto the total score.
 ]]--
-function score:judgeSlider()
-
+function score:judgeSlider(o)
+	local hitError,score,time = self:judgeHead(o)
+	if hitError then
+		table.insert(self.hitErrors,hitError)
+		self.isHit[o] = {}
+		--print("hit",o,time)
+		self.isHit[o].time = time
+	else
+		--print("miss "..o)
+	end
 end
 
-function score:judgeNextObject()
+function score:judgeNextObject(objnum)
 	
 end
 
 --this runs through all the objects in the map and judges them all.
 function score:judgeAll()
+	self:reset()
 	for o = 1,#self.map.hitObjects do
-		
+		local object = self.map.hitObjects[o]
+		if object.type == "slider" then
+			self:judgeSlider(o)
+		elseif object.type == "circle" then
+			self:judgeCircle(o)
+		end
 	end
-end
 
+	
+	--printTable(self.hitErrors)
+	--this is temporary!!
+	gt = cull(self.hitErrors,function(a) return a < 0 end)
+	lt = cull(self.hitErrors,function(a) return a >= 0 end)
+	print("Error: "..average(lt).."ms - "..average(gt).."ms avg")
+	print("Unstable Rate: ",round(standardDeviation(self.hitErrors)*10))
+end
+ 
 --this function can be used in situations when you don't have the whole replay yet
 function score:judgeReplaySoFar()
 
@@ -162,6 +278,13 @@ function newScore.new(map,replay)
 	elseif type(map) ~= "table" or type(replay) ~= "table" then
 		return nil
 	end
+
+	--check if the replay is wrapped/parsed yet, if not,
+	--wrap it in replay stream
+	if not replay.events then
+		replay = rps.wrap(replay)
+	end
+	
 	--todo, more checking to make sure that what is passed in actually is the 
 	--map and replay, or something that you can use as the map/replay to judge 
 	--the score.
@@ -169,6 +292,7 @@ function newScore.new(map,replay)
 	setmetatable(self,{__index = score})
 	self.map = map
 	self.replay = replay
+	self.isHit = {}
 	return self
 end
 

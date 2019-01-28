@@ -2,3 +2,6 @@
 *.dll
 run.bat
 debugger.lua
+lzma.*
+run.*
+ProFi.lua
