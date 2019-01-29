@@ -72,17 +72,6 @@ function score:judgeHead(o)
 		firstReplayPoint = self.replay:search(self.map.hitObjects[o].time-self.map.odms)
 	end
 	
-	local function getscore(ms)--only ever called if it's been confirmed hit
-		ms = math.abs(ms)
-		if ms < self.map.odms300 then
-			return 300
-		elseif ms < self.map.odms100 then
-			return 100
-		else
-			return 50
-		end
-	end
-	
 	res,key = self:findClick(firstReplayPoint,lastReplayPoint)
 	firstReplayPoint = res + 1
 	while res ~= false do
@@ -103,7 +92,9 @@ function score:judgeHead(o)
 			if isInRad(self.map.hitObjects[o].pos,point.pos,self.map.circleRadius) then
 				--we have hit the circle
 				local he = point.time-self.map.hitObjects[o].time
-				return he,getscore(he),point.time
+				local score = 0
+				if he < self.map.odms300 then score = 300 elseif he < self.map.odms100 then score = 100 else score = 50 end
+				return he,score,point.time
 			end
 		end
 		res,key = self:findClick(firstReplayPoint,lastReplayPoint)
