@@ -7,6 +7,8 @@ Osu Object Parsing and Analysis Suite
 OOPAS is a set of libraries meant to make reading and analyzing certain osu files easy. These libraries will read and parse map files and replay flies. It will perform scoring/judging of the replay on the map and return useful information about what happened. This allows for easy creation of tools that can show different metrics and statistics about plays that simply isn't stored in any immediately readable form.  
 This project is currently written in lua, targeting luajit (lua 5.1 with some 5.2 extensions) since lua is the language I am most comfortable with. In the future when I'm satisfied with it's accuracy I will personally port this to javascript which will probably be more useful.
 
+Note: The goal of this lib is to create accurate results and be easy to use, it is not(yet) meant to be fast.
+
 Libraries included in this repo:
 
 - Beatmap reader/parser
@@ -15,7 +17,7 @@ Libraries included in this repo:
 - Beatmap difficulty calculator
   -PP calculator (port of [oppai-ng](https://github.com/Francesco149/oppai-ng))
 - Replay reader/parser
-- Play scoring (the star of this repo)
+- Play scoring (the main goal of this project)
   - UR/error metrics (easy)
   - 300s/100s/50s/misses gotten and when
   - slider breaks, what/when and why
@@ -34,7 +36,7 @@ Libraries included in this repo:
 
 ## Dependencies
 
--none? yet...
+[lua-lzma](https://github.com/columna1/lua-lzma)
 
 ## Future plans
 
@@ -61,7 +63,9 @@ To do: (please help 🆘)
 
 ## How to use
 
-Get [luajit](http://luajit.org/). You can just download and extract the binary somewhere
+Get [luajit](http://luajit.org/). You can just download and extract the binary somewhere  
+The easiest way to install would probably be [luarocks](https://luarocks.org/)  
+Install luasocket (for timing, comment those lines out if you don't want to install socket)
 
 compile custom [lua-lzma](https://github.com/columna1/lua-lzma) source and place it into the project directory  
 *you may have to edit the make file

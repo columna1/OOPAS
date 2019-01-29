@@ -15,6 +15,8 @@ function score:reset()--resets all accumulated statistics
 	self.currentObject = 0
 	self.isHit = {}
 
+	--gives info about all clicks
+	self.hitInfo = {}
 	--temporary
 	self.hitErrors = {}
 end
@@ -51,7 +53,6 @@ function score:findClick(startInd,endInd)
 	end
 	return false,0
 end
---t=0
 --most of the logic for judging circles/slider heads because they are so similar
 function score:judgeHead(o)
 	--find the first click within the judge window
@@ -61,7 +62,7 @@ function score:judgeHead(o)
 
 	if o > 1 then
 		if self.isHit[o-1] then
-			if self.isHit[o-1].time > self.map.hitObjects[o].time-self.map.odms then
+			if self.isHit[o-1].time >= self.map.hitObjects[o].time-self.map.odms then
 				--start searching from where the last note was hit since we can't
 				--count that for our current note
 				firstReplayPoint = self.replay:search(self.isHit[o-1].time)+1
@@ -71,14 +72,7 @@ function score:judgeHead(o)
 	if firstReplayPoint == -1 then
 		firstReplayPoint = self.replay:search(self.map.hitObjects[o].time-self.map.odms)
 	end
-
-	local function checkHit(point)
-		if isInRad(self.map.hitObjects[o].pos,point.pos,self.map.circleRadius) then
-			--we have hit the circle
-			local hitError = point.time-self.map.hitObjects[o].time
-			return true
-		end
-	end
+	
 	local function getscore(ms)--only ever called if it's been confirmed hit
 		ms = math.abs(ms)
 		if ms < self.map.odms300 then
@@ -92,37 +86,23 @@ function score:judgeHead(o)
 	
 	res,key = self:findClick(firstReplayPoint,lastReplayPoint)
 	firstReplayPoint = res + 1
-	--if res == false then print("didn't see click "..o) end
 	while res ~= false do
+		--attempt to make things more readable
 		local point = self.replay.events[res]
-		--check to see if the last object has been hit, if it has been hit
-		--and when, make sure it's been hit before we count this one as hit
+		local curObj = self.map.hitObjects[o]
+		local lastObj = 0
+		--check to see if the last object's hit window overlaps with the one we
+		--are currently checking, if it does, make sure it's been hit
+		--if it hasn't been hit then make sure the hit we are checking isn't in
+		--the last note's hit window.
+
 		if o > 1 then
-			if self.map.hitObjects[o-1].time+self.map.odms > 
-				self.map.hitObjects[o].time-self.map.odms then
-				--print(self.isHit[o],point.time,0)
-				if self.isHit[o-1] then
-					--print(o-1)
-					if self.isHit[o-1].time < point.time then
-						if checkHit(point) then
-							local he = point.time-self.map.hitObjects[o].time
-							return he,getscore(he),point.time
-						else
-							--print("click missed")
-						end
-					end
-				else
-					--print("last was not hit "..t,o-1)
-					--t = t + 1
-				end
-			else
-				if checkHit(point) then
-					local he = point.time-self.map.hitObjects[o].time
-					return he,getscore(he),point.time
-				end
-			end
-		else
-			if checkHit(point) then
+			lastObj = self.map.hitObjects[o-1]
+		end
+
+		if o == 1 or (not (point.time <= lastObj.time+self.map.odms and (not self.isHit[o-1]))) then
+			if isInRad(self.map.hitObjects[o].pos,point.pos,self.map.circleRadius) then
+				--we have hit the circle
 				local he = point.time-self.map.hitObjects[o].time
 				return he,getscore(he),point.time
 			end
@@ -130,7 +110,6 @@ function score:judgeHead(o)
 		res,key = self:findClick(firstReplayPoint,lastReplayPoint)
 		firstReplayPoint = res + 1
 	end
-	--print("miss :(")
 	return false
 end
 
@@ -235,10 +214,7 @@ function score:judgeSlider(o)
 	if hitError then
 		table.insert(self.hitErrors,hitError)
 		self.isHit[o] = {}
-		--print("hit",o,time)
 		self.isHit[o].time = time
-	else
-		--print("miss "..o)
 	end
 end
 
