@@ -39,11 +39,9 @@ function score:findClick(startInd,endInd)
 		local k1,k2 = self.replay.events[i].k1,self.replay.events[i].k2
 		local ret = 0
 		if k1 and not lk1 then
-			--return i,1
 			ret = ret + 1
 		end
 		if k2 and not lk2 then
-			--return i,2
 			ret = ret + 2
 		end
 		if ret > 0 then
@@ -54,6 +52,7 @@ function score:findClick(startInd,endInd)
 	return false,0
 end
 --most of the logic for judging circles/slider heads because they are so similar
+--TODO: take care of situations where both keys are pressed at once.
 function score:judgeHead(o)
 	--find the first click within the judge window
 	--local firstReplayPoint = self.replay:search(self.map.hitObjects[o].time-self.map.odms)
@@ -124,13 +123,20 @@ The values for OD are calculated as so: We use a function named
 "difficultyRange", The source was taken from lazer. read readmap.lua for more 
 information.
 
-A circle is only judged if it is the earliest object that hasn't been hit, 
-missed, or it's judge window has lapsed. This causes an effect commonly refered 
-to as "note lock". Durring the hit window of the cicle we look to see If the 
-circle meets these conditions then when the user presses a key, either k1(mouse 
-button1 or keyboard button 1) or k2(mouse button 2 or keyboard button 2) we look 
-to see if the user is inside of the cirle's radius and then count as a hit or 
+A circle is only judged if it is the earliest object that hasn't been hit,
+missed, or it's judge window has lapsed. This causes an effect commonly refered
+to as "note lock". Durring the hit window of the cicle we look to see If the
+circle meets these conditions then when the user presses a key, either k1(mouse
+button1 or keyboard button 1) or k2(mouse button 2 or keyboard button 2) we look
+to see if the user is inside of the cirle's radius and then count as a hit or
 miss based on when the circle was hit.
+
+Edge case: both keys pressed at once. Currenctly, at least in cutting edge
+Jan 2019 if both keys are pressed at once then the game counts it as a hit on
+both the object you are on and the object under it if it can be hit. However it
+does't seem to have always been this way, as recent as a couple years ago I found
+evidence that seems to suggest that it would only count one hit on the topmost 
+object that could be hit at that moment.
 
 Combo: if the circle was hit then we increment the current combo, if it was 
 missed then the combo is reset.
