@@ -79,10 +79,10 @@ function score:judgeHead(o)
 		local point = self.replay.events[res]
 		local curObj = self.map.hitObjects[o]
 		local lastObj = 0
-		--check to see if the last object's hit window overlaps with the one we
-		--are currently checking, if it does, make sure it's been hit
-		--if it hasn't been hit then make sure the hit we are checking isn't in
-		--the last note's hit window.
+
+		--if our object doens't have any before it or the last note has been hit
+		--or if it hasn't then it's hitwindow has lapsed then we check to see if
+		--we hit the note correctly
 
 		if o > 1 then
 			lastObj = self.map.hitObjects[o-1]
