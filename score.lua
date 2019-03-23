@@ -1,7 +1,9 @@
 local vec2 = require("vec2")
 local rps = require("replaystream")
+local curves = require("slidercurves")
 require("bit")
 require("util")
+
 
 local score = {}
 local newScore = {}
@@ -55,7 +57,6 @@ end
 --TODO: take care of situations where both keys are pressed at once.
 function score:judgeHead(o)
 	--find the first click within the judge window
-	--local firstReplayPoint = self.replay:search(self.map.hitObjects[o].time-self.map.odms)
 	local firstReplayPoint = -1
 	local lastReplayPoint = self.replay:search(self.map.hitObjects[o].time+self.map.odms)
 
@@ -63,7 +64,7 @@ function score:judgeHead(o)
 		if self.isHit[o-1] then
 			if self.isHit[o-1].time >= self.map.hitObjects[o].time-self.map.odms then
 				--start searching from where the last note was hit since we can't
-				--count that for our current note
+				--count that for our current note*
 				firstReplayPoint = self.replay:search(self.isHit[o-1].time)+1
 			end
 		end
@@ -213,6 +214,40 @@ function score:judgeSlider(o)
 		self.isHit[o] = {}
 		self.isHit[o].time = time
 	end
+	local slider = self.map.hitObjects[o]
+	--go through the slider and check to see if it's being properly followed,
+	--if it is when a slider tick happens then that tick counts as being hit
+	local active = false
+	local startTime = time
+	for i = 1,#slider.ticks do
+		--loop through all the time points before our tick
+		--time = slider.ticks[i][2]
+		local startTimePoint = self.replay:search(time)
+		while time < slider.ticks[i][2]+startTime do
+			startTimePoint = startTimePoint + 1
+			time = self.replay.events[startTimePoint].time
+			-- check to see if we are in the follow circle and a key is being
+			-- held down
+			local progress = (time-startTime)/slider.totalDuration
+			local sliderPoint = getPointAt(progress,slider)
+			if isInRad(self.replay.events[startTimePoint].pos,sliderPoint,self.map.circleRadius,( active and 2.4 or 1 )) then--and * then--todo: make function
+				--to check if key is held down, (possibly make this aware
+				--of the edge cases? handle them here?
+				active = true
+			else
+				--slider isn't being followed correctly, slider is not active
+				active = false
+			end
+		end
+		--we have reached the tick
+		--if the slider is acive then count the tick as hit
+		
+	end
+	
+	--check to see if the slider is properly being followed and is active
+	--till the end of the slider, if it is then the slider end is counted
+	--as hit, the slider ends 36 ms early or half way through it's duration
+	--if it's duration is less than 72ms
 end
 
 function score:judgeNextObject(objnum)
