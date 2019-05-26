@@ -74,7 +74,8 @@ function score:judgeHead(o)
 	end
 	
 	res,key = self:findClick(firstReplayPoint,lastReplayPoint)
-	firstReplayPoint = res + 1
+	--print(res)
+	if res then firstReplayPoint = res + 1 end
 	while res ~= false do
 		--attempt to make things more readable
 		local point = self.replay.events[res]
@@ -99,7 +100,7 @@ function score:judgeHead(o)
 			end
 		end
 		res,key = self:findClick(firstReplayPoint,lastReplayPoint)
-		firstReplayPoint = res + 1
+		if res then firstReplayPoint = res + 1 end
 	end
 	return false
 end
@@ -209,45 +210,81 @@ score is found, the score is treated like a cirle and added onto the total score
 ]]--
 function score:judgeSlider(o)
 	local hitError,score,time = self:judgeHead(o)
+	local hitTicks = 0
+	local headHit = false
 	if hitError then
 		table.insert(self.hitErrors,hitError)
 		self.isHit[o] = {}
 		self.isHit[o].time = time
+		headHit = true
+		hitTicks = 1
 	end
 	local slider = self.map.hitObjects[o]
 	--go through the slider and check to see if it's being properly followed,
 	--if it is when a slider tick happens then that tick counts as being hit
+	
+	local ticksHit = 0
+	local checkedEnd = false
+	
+	local startTime = slider.time
+	local lazyDuration = slider.duration*slider.repeats
+	if lazyDuration >= 72 then lazyDuration = lazyDuration-36 else lazyDuration = lazyDuration/2 end
+	
 	local active = false
-	local startTime = time
-	for i = 1,#slider.ticks do
-		--loop through all the time points before our tick
-		--time = slider.ticks[i][2]
-		local startTimePoint = self.replay:search(time)
-		while time < slider.ticks[i][2]+startTime do
-			startTimePoint = startTimePoint + 1
-			time = self.replay.events[startTimePoint].time
-			-- check to see if we are in the follow circle and a key is being
-			-- held down
-			local progress = (time-startTime)/slider.totalDuration
-			local sliderPoint = getPointAt(progress,slider)
-			if isInRad(self.replay.events[startTimePoint].pos,sliderPoint,self.map.circleRadius,( active and 2.4 or 1 )) then--and * then--todo: make function
-				--to check if key is held down, (possibly make this aware
-				--of the edge cases? handle them here?
-				active = true
-			else
-				--slider isn't being followed correctly, slider is not active
-				active = false
+	local endHit = false
+	--local point = self.replay.events[self.replay:search(startTime)]
+	local point = self.replay:seekToTime(startTime)
+	local currentTick = false
+	local cticknum = 1
+	if #slider.ticks > 0 then currentTick = slider.ticks[1] end
+	
+	while point.time <= startTime+slider.totalDuration do
+		progress = (point.time-startTime)/slider.duration
+		local pxy = getPointAt(progress,slider)
+		--this point is relative to the slider head, adjust to match the replay we are checking against
+		local a = pxy+slider.pos
+		
+		--check to see if the current tick's time has elapsed, if it has then use the last loop's
+		--active value (as it's the last input before the tick happens) to see if this tick
+		--has been hit
+		--**TODO: possibly interpolate to see if the cursor exited the active area when the tick is processed.
+		--idk if this will increase accuracy or not
+		if currentTick then
+			if slider.time+currentTick[2] < point.time then
+				if active then 
+					ticksHit = ticksHit + 1 
+				end
+				cticknum = cticknum + 1
+				if #slider.ticks >= cticknum then
+					currentTick = slider.ticks[cticknum]
+				else
+					currentTick = false
+				end
 			end
 		end
-		--we have reached the tick
-		--if the slider is acive then count the tick as hit
 		
+		local isKey = point.k1 or point.k2--will make more smart later
+		
+		if isInRad(point.pos,a,self.map.circleRadius,( active and 2.4 or 1 )) and isKey then
+			active = true
+		else
+			active = false
+		end
+		
+		
+		point = self.replay:nextEvent()
+		
+		if point.time > startTime+lazyDuration and active and not checkedEnd then
+			endHit = true
+		end
+		if point.time > startTime+lazyDuration then
+			checkedEnd = true
+		end
 	end
 	
-	--check to see if the slider is properly being followed and is active
-	--till the end of the slider, if it is then the slider end is counted
-	--as hit, the slider ends 36 ms early or half way through it's duration
-	--if it's duration is less than 72ms
+	if not endHit then print("MISSED SLIDER END "..o) end
+	if not headHit then print("MISSED SLIDER HEAD "..o) end
+	if ticksHit < #slider.ticks then print("MISSED SLIDER TICK "..o) end
 end
 
 function score:judgeNextObject(objnum)
