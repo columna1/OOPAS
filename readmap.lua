@@ -43,7 +43,7 @@ function map:parseTimingPoint(line)
 			error("first timing point can't be inherited")
 		end
 		local lastNonInheritedPoint = 1
-		if #self.timingPoints < 2 then
+		if #self.timingPoints > 2 then
 			for i = #self.timingPoints,1,-1 do
 				if self.timingPoints[i].msPerBeat > 0 then
 					lastNonInheritedPoint = i
@@ -51,6 +51,7 @@ function map:parseTimingPoint(line)
 				end
 			end
 		end
+		tp.inheritedFrom = self.timingPoints[lastNonInheritedPoint].msPerBeat
 		tp.inheritedMsPerBeat = self.timingPoints[lastNonInheritedPoint].msPerBeat * (math.abs(tp.msPerBeat)/100)
 	else
 		tp.inheritedMsPerBeat = tp.msPerBeat
@@ -88,9 +89,6 @@ end
 
 function map:findTimingPoint(ms)
 	for i = 1,#self.timingPoints do
-		if self.timingPoints[i].time == ms then
-			return self.timingPoints[i]
-		end
 		if self.timingPoints[i].time > ms then
 			return self.timingPoints[i-1]
 		end
@@ -118,7 +116,6 @@ function map:parseHitObject(line)
 		--calculate slider path and ticks
 		--slider is passed in by reference since that's how tables work in lua
 		--this is weird and I don't like it but it's performant..
-		--dbg()
 		sliderCalc.calculatePath(sl[6],obj,timingPoint.msPerBeat,self.sliderTickRate)
 	end
 	table.insert(self.hitObjects,obj)
@@ -126,7 +123,7 @@ end
 
 function map:parseline(line)
 	local first = line:sub(1,1)
-	if #line < 1 then
+	if #line <= 1 then
 		return
 	elseif first == " " or first == "_" or first == "/" then--comments
 		return 
@@ -153,7 +150,7 @@ function map:parse(mapdata)
 		end
 	elseif type(mapdata) == "userdata" then
 		for line in mapdata:lines() do
-			self:parseline(line)
+			self:parseline(line:gsub("[\r\n]",""))
 		end
 	end
 end
