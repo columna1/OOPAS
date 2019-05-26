@@ -43,14 +43,14 @@ function replay:search(ms)
 end
 
 function replay:currentEvent()
-	if self.offset < #self.events()-1 then
+	if self.offset < #self.events-1 then
 		self.offset = self.offset + 1
 	end
 	return self.events[self.offset-1]
 end
 
 function replay:nextEvent()
-	if self.offset < #self.events()-1 then
+	if self.offset < #self.events-1 then
 		self.offset = self.offset + 1
 	end
 	return self.events[self.offset]
