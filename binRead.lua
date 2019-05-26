@@ -41,7 +41,8 @@ function m:readNumber(x)--little endian
 	return sum
 end
 
-function m:readLong()--little endian
+function m:readLong()--little endian --note this won't work correctly as lua's number system is a 32/64 bit float depending
+--on the host's architecture, as such you don't get as much accuracy, something like 56 bit on 64bit machines which is not enough
 	check(self)
 	return self:readNumber(8)
 end
