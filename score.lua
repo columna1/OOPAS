@@ -163,7 +163,7 @@ function score:judgeCircle(o)
 		--print("hit",o,time)
 		self.isHit[o].time = time
 	else
-		--print("miss "..o)
+		print("CIRCLE MISS "..o)
 	end
 end
 
@@ -222,7 +222,6 @@ function score:judgeSlider(o)
 	local slider = self.map.hitObjects[o]
 	--go through the slider and check to see if it's being properly followed,
 	--if it is when a slider tick happens then that tick counts as being hit
-	
 	local ticksHit = 0
 	local checkedEnd = false
 	
