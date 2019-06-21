@@ -3,6 +3,7 @@ local rps = require("replaystream")
 local curves = require("slidercurves")
 require("bit")
 require("util")
+dbg = require("debugger")
 
 
 local score = {}
@@ -66,15 +67,22 @@ function score:judgeHead(o)
 				--start searching from where the last note was hit since we can't
 				--count that for our current note*
 				firstReplayPoint = self.replay:search(self.isHit[o-1].time)+1
+				--search for the first point after the time in which the last note was hit
+				--sometimes osu gives 0ms gaps between points which leads to some weird behaviour
+				while self.isHit[o-1].time == self.replay.events[firstReplayPoint].time do
+					firstReplayPoint = firstReplayPoint + 1
+				end
 			end
 		end
 	end
 	if firstReplayPoint == -1 then
 		firstReplayPoint = self.replay:search(self.map.hitObjects[o].time-self.map.odms)
+		--make sure this point is actually in the note's hit window (it could be a few ms before)
+		while self.replay.events[firstReplayPoint].time < self.map.hitObjects[o].time-self.map.odms do
+			firstReplayPoint = firstReplayPoint + 1
+		end
 	end
-	
 	res,key = self:findClick(firstReplayPoint,lastReplayPoint)
-	--print(res)
 	if res then firstReplayPoint = res + 1 end
 	while res ~= false do
 		--attempt to make things more readable
@@ -89,11 +97,11 @@ function score:judgeHead(o)
 		if o > 1 then
 			lastObj = self.map.hitObjects[o-1]
 		end
-
+		
 		if o == 1 or (not (point.time <= lastObj.time+self.map.odms and (not self.isHit[o-1]))) then
 			if isInRad(self.map.hitObjects[o].pos,point.pos,self.map.circleRadius) then
-				--we have hit the circle
 				local he = point.time-self.map.hitObjects[o].time
+				--we have hit the circle
 				local score = 0
 				if he < self.map.odms300 then score = 300 elseif he < self.map.odms100 then score = 100 else score = 50 end
 				return he,score,point.time
