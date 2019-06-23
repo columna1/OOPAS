@@ -3,7 +3,7 @@ local rps = require("replaystream")
 local curves = require("slidercurves")
 require("bit")
 require("util")
-dbg = require("debugger")
+--dbg = require("debugger")
 
 
 local score = {}
@@ -14,6 +14,7 @@ function score:reset()--resets all accumulated statistics
 	self.maxCombo = 0
 	self.threeHundreds = 0
 	self.oneHundreds = 0
+	self.fifties = 0
 	self.misses = 0
 	self.currentObject = 0
 	self.isHit = {}
@@ -101,9 +102,10 @@ function score:judgeHead(o)
 		if o == 1 or (not (point.time <= lastObj.time+self.map.odms and (not self.isHit[o-1]))) then
 			if isInRad(self.map.hitObjects[o].pos,point.pos,self.map.circleRadius) then
 				local he = point.time-self.map.hitObjects[o].time
+				local hse = math.abs(he)
 				--we have hit the circle
 				local score = 0
-				if he < self.map.odms300 then score = 300 elseif he < self.map.odms100 then score = 100 else score = 50 end
+				if hse < self.map.odms300 then score = 300 elseif hse < self.map.odms100 then score = 100 else score = 50 end
 				return he,score,point.time
 			end
 		end
@@ -170,6 +172,17 @@ function score:judgeCircle(o)
 		self.isHit[o] = {}
 		--print("hit",o,time)
 		self.isHit[o].time = time
+		
+		--score
+		if score == 0 then
+			self.misses = self.misses + 1
+		elseif score == 50 then
+			self.fifties = self.fifties + 1
+		elseif score == 100 then
+			self.oneHundreds = self.oneHundreds + 1
+		elseif score == 300 then
+			self.threeHundreds = self.threeHundreds + 1
+		end
 	else
 		print("CIRCLE MISS "..o)
 	end
@@ -292,6 +305,21 @@ function score:judgeSlider(o)
 	if not endHit then print("MISSED SLIDER END "..o) end
 	if not headHit then print("MISSED SLIDER HEAD "..o) end
 	if ticksHit < #slider.ticks then print("MISSED SLIDER TICK "..o) end
+	
+	--scoring
+	local totalTicks = #slider.ticks + 2
+	if headHit then ticksHit = ticksHit + 1 end
+	if endHit  then ticksHit = ticksHit + 1 end
+	
+	if ticksHit == totalTicks then
+		self.threeHundreds = self.threeHundreds + 1
+	elseif ticksHit >= totalTicks/2 then
+		self.oneHundreds = self.oneHundreds + 1
+	elseif ticksHit > 0 then
+		self.fifties = self.fifties + 1
+	else
+		self.misses = self.misses + 1
+	end
 end
 
 function score:judgeNextObject(objnum)
@@ -307,6 +335,8 @@ function score:judgeAll()
 			self:judgeSlider(o)
 		elseif object.type == "circle" then
 			self:judgeCircle(o)
+		else
+			self.threeHundreds = self.threeHundreds + 1
 		end
 	end
 
@@ -317,6 +347,7 @@ function score:judgeAll()
 	lt = cull(self.hitErrors,function(a) return a >= 0 end)
 	print("Error: "..average(lt).."ms - "..average(gt).."ms avg")
 	print("Unstable Rate: ",round(standardDeviation(self.hitErrors)*10))
+	print(self.threeHundreds.."x300 "..self.oneHundreds.."x100 "..self.fifties.."x50 "..self.misses.."xmiss")
 end
  
 --this function can be used in situations when you don't have the whole replay yet
