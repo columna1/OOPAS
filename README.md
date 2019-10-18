@@ -63,20 +63,51 @@ To do: (please help 🆘)
 
 ## How to use
 
-Get [luajit](http://luajit.org/). You can just download and extract the binary somewhere  
-The easiest way to install would probably be [luarocks](https://luarocks.org/)  
-Install luasocket (for timing, comment those lines out if you don't want to install socket)
+### Windows
 
-compile custom [lua-lzma](https://github.com/columna1/lua-lzma) source and place it into the project directory  
-*you may have to edit the make file
+For [luajit](http://luajit.org/) either follow the instructions on juajit's website to download 
+and build, or use pre-built binaries from somewhere like [luapower](https://luapower.com/luajit), 
+[luaforwindows](), or other sources. like [this one](https://sourceforge.net/p/safelua/wiki/LuaJIT%20binaries/) from sourceforge.  
 
+Another option is to install [luarocks](https://luarocks.org/), or straight from [lua.org](https://www.lua.org/download.html).
+remember that this project targets lua 5.1/5.2  
+
+Once you have your lua binary you need to download or compile my custom version of [lua-lzma](https://github.com/columna1/lua-lzma),
+which was ported to lua 5.2, and made to work with "standard" lzma files. All you need to do is place the dll into the project
+directory or in the same directory as your lua binary.  
+
+A note on compiling lua-lzma: I created a new makefile inside the src folder to compile using mingw, the lua source paths
+and such are hard coded, so the makefile will need editing, sorry I'm not good with c...  
+
+from there it's just a matter of runing the project. Make sure you are in the project's directory and
+run ```[luapath].exe test/test.lua```
+
+###linux
+
+Debian/Ubuntu:
+Install lua
 ```shell
-cd lua-lzma/src
-make
-cp lzma.so* somewhere/OOPAS/
+sudo apt-get install luajit
 ```
-
-run ```luajit test/test.lua```
+Install lua-lzma libluajit-5.1-dev
+```shell
+git clone https://github.com/columna1/lua-lzma
+cd lua-lzma/src
+rm Makefile
+cp Makefilelin Makefile
+nano Makefile
+```
+Change luaDIR to correctly reflect lua's source path
+(default is /usr/lib/luajit-2.0/ or /usr/lib/lua5.x/)
+```shell
+make
+cp lzma.so [oopas]
+```
+Run OOPAS
+```
+cd OOPAS
+luajit test/test.lua
+```
 
 ## Related repositories
 

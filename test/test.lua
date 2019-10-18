@@ -37,6 +37,7 @@ local replay = replayReader(io.open("/mnt/e/osu!/Replays/columna1 - ETIA. - Lost
 print(replay.player)
 print("https://osu.ppy.sh/web/osu-getreplay.php?c="..replay.onlineID.."&m=0")
 print(replay.combo)
+print(replay.threehundreds.."x300 "..replay.onehundreds.."x100 "..replay.fifties.."x50 "..replay.misses.."xmiss")
 local s = socket.gettime()
 print(math.floor((s-f)*1000).."ms to read replay")
 --print(replay.uncompressedData)
@@ -73,3 +74,4 @@ sc:judgeAll()
 local s = socket.gettime()
 print(math.floor((s-f)*1000).."ms to score map")
 print(math.floor((s-ff)*1000).."ms total")
+
