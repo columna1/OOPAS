@@ -72,7 +72,7 @@ and build, or use pre-built binaries from somewhere like [luapower](https://luap
 Another option is to install [luarocks](https://luarocks.org/), or straight from [lua.org](https://www.lua.org/download.html).
 remember that this project targets lua 5.1/5.2  
 
-Once you have your lua binary you need to download or compile my custom version of [lua-lzma](https://github.com/columna1/lua-lzma),
+Once you have your lua binary you need to [download](https://github.com/columna1/lua-lzma/releases) or compile my custom version of [lua-lzma](https://github.com/columna1/lua-lzma),
 which was ported to lua 5.2, and made to work with "standard" lzma files. All you need to do is place the dll into the project
 directory or in the same directory as your lua binary.  
 
