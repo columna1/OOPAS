@@ -87,9 +87,9 @@ run ```[luapath].exe test/test.lua```
 Debian/Ubuntu:
 Install lua
 ```shell
-sudo apt-get install luajit
+sudo apt-get install luajit libluajit-5.1-dev
 ```
-Install lua-lzma libluajit-5.1-dev
+Install lua-lzma
 ```shell
 git clone https://github.com/columna1/lua-lzma
 cd lua-lzma/src
