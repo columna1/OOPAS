@@ -82,7 +82,7 @@ and such are hard coded, so the makefile will need editing, sorry I'm not good w
 from there it's just a matter of runing the project. Make sure you are in the project's directory and
 run ```[luapath].exe test/test.lua```
 
-###linux
+### linux
 
 Debian/Ubuntu:
 Install lua
