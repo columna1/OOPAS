@@ -19,13 +19,13 @@ local oop = {}
 ]]
 function oop.defineClass (tab)
     -- Set tab.new to
-    tab.new = function (self, options)
+    tab.new = function (options)
         -- First, define the new object inheriting from tab.
         local newObject = {}
 
         -- Then, inherit the prototype values.
-        if (type(self.prototype) == "table") then
-            for key, value in pairs(self.prototype) do
+        if (type(tab.prototype) == "table") then
+            for key, value in pairs(tab.prototype) do
                 newObject[key] = value
             end
         end
