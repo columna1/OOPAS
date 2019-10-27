@@ -3,8 +3,8 @@
 	Allows for easy operations between 2 numbers.
 
 	Properties:
-		(LuaNumber) x (also can be referenced as [1]) (Default: 0)
-		(LuaNumber) y (also can be referenced as [2]) (Default: 0)
+		(LuaNumber) x = 0 (also can be referenced as [1])
+		(LuaNumber) y = 0 (also can be referenced as [2])
 ]]
 
 -- Imports
