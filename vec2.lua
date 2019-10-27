@@ -6,18 +6,23 @@
 		(LuaNumber) x (also can be referenced as [1]) (Default: 0)
 		(LuaNumber) y (also can be referenced as [2]) (Default: 0)
 ]]
+
+-- Imports
 local common = require("common")
 local oop = require("oop")
+
+-- This
 local vec2 = {}
 
 --[[
 	vec2 Prototype
 ]]
 vec2.prototype = {}
-vec2.prototype.type = "vec2"
+vec2.prototype.type = "vec2" -- Extension of type(o), use (type(o)=="table" and o.type=="vec2")
 vec2.prototype.x = 0
 vec2.prototype.y = 0
 
+-- Metatable object.
 vec2.metatable = {}
 
 --[[
