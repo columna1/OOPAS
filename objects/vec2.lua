@@ -8,8 +8,8 @@
 ]]
 
 -- Imports
-local common = require("common")
-local oop = require("oop")
+local common = require("../constants/common")
+local oop = require("../helpers/oop")
 
 -- This
 local vec2 = {}
