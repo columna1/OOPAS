@@ -37,6 +37,7 @@ Libraries included in this repo:
 ## Dependencies
 
 [lua-lzma](https://github.com/columna1/lua-lzma)
+Please note that with the release of this, you may encounter issues depending on if you're running a 32-bit version of Lua or not. If you encounter ``%1 is not a valid Win32 application.`` you may need to switch the bitness of your lua executable. This will be cleaned up at a future date.
 
 ## Future plans
 
