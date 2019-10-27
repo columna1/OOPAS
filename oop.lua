@@ -6,14 +6,16 @@ local oop = {}
 
 --[[
     Method: defineClass
-    Arguments: (Class) tab
-
     Creates a constructor for tab based on its properties.
     The new object will:
         1. Inherit values from the prototype property of the class object, then
         2. Inherit values from the options specified, then
-        3. Inherit any class methods from tab, then finally
-        4. Inherit the metatable of the class if it exists.
+        3. Inherit any class methods from tab, then
+        4. Inherit the metatable of the class if it exists, finally
+        5. Run the tab.constructor method if it exists.
+
+    Arguments: (Class) tab
+    Returns: (object) newObject
 ]]
 function oop.defineClass (tab)
     -- Set tab.new to
@@ -40,9 +42,14 @@ function oop.defineClass (tab)
             end
         end
 
-        -- Finally, inherit the metatable if it exists.
+        -- Then, inherit the metatable if it exists.
         if (type(tab.metatable) == "table") then
             setmetatable(newObject, tab.metatable)
+        end
+
+        -- Finally, run the constructor if it exists.
+        if (type(tab.constructor) == "function") then
+            tab.constructor(newObject)
         end
 
         return newObject
