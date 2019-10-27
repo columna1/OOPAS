@@ -5,6 +5,7 @@
 local common = {}
 
 -- Error formats.
+common.FMT_ERR_TEST_FAILED = "Error running test #%s: %s"
 common.FMT_ERR_UNEXPECTED_KEY = "Unexpected key type: '%s' (%s)"
 
 -- Common functions.
