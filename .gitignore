@@ -1,7 +1,5 @@
 *-old.lua
 *.dll
-run.bat
 debugger.lua
-lzma.*
-run.*
 ProFi.lua
+*.bat
