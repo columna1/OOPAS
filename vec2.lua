@@ -207,6 +207,9 @@ end
 --[[
 	Method: print
 	Prints out the tostring version of the vec2.
+
+	Arguments: (none)
+	Returns: nil
 ]]
 function vec2:print ()
 	print(tostring(self))
