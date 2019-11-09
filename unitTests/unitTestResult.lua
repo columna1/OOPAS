@@ -21,7 +21,9 @@ unitTestResult.prototype.unitTest = common.NULL_OBJECT
 unitTestResult.prototype.passed = false
 unitTestResult.prototype.errorMessage = ""
 unitTestResult.prototype.testDuration = 0
+unitTestResult.prototype.type = "unitTestResult"
 
+-- Turn unitTestResult into a proper class.
 oop.defineClass(unitTestResult)
 
 return unitTestResult
