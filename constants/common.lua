@@ -4,6 +4,8 @@
 ]]
 local common = {}
 
+common.NULL_OBJECT = {} -- Not-yet-defined objects, for explicitly defining null values.
+
 -- Error formats.
 common.FMT_ERR_TEST_FAILED = "Error running test #%s: %s"
 common.FMT_ERR_UNEXPECTED_KEY = "Unexpected key type: '%s' (%s)"
