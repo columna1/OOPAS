@@ -94,7 +94,7 @@ end
   Returns: (LuaNumber) byte
 ]]
 function binaryReader:readByte ()
-  return self.readBytes(1)[1]
+  return string.byte(self.readBytes(1))
 end
 
 --[[
@@ -129,10 +129,9 @@ end
   Returns: (LuaNumber) int
 ]]
 function binaryReader:readInt ()
-  local data = self:readBytes(4)
   local total = 0
   for i=1, 4 do
-    total = total + bit.lshift(data[i], 8*i)
+    total = total + bit.lshift(string.byte(self:readBytes(1)), 8*i)
   end
   return total
 end
@@ -171,6 +170,60 @@ function binaryReader:readULEB128()
 		until c == 0                      -- Repeat if there is more to the value
 	end
 	return value
+end
+
+--[[
+  Method: readString
+  Reads a string.
+
+  Returns: (string) str
+]]
+function binaryReader:readString ()
+  local stringHasData = (self:readByte() == 0x0B)
+  if stringHasData then
+    local stringLength = self:readULEB128()
+    return self:readBytes(stringLength)
+  else
+    return ""
+  end
+end
+
+--[[
+  Method: readSingle
+  Reads a single.
+    
+  Returns: (LuaNumber) single
+]]
+function binaryReader:readSingle ()
+  local data = self:readBytes(4)
+  local sign = 1
+  local mantissa = string.byte(data, 3) % 128
+  for i = 2, 1, -1 do mantissa = mantissa * 256 + string.byte(data, i) end
+  if string.byte(data, 4) > 127 then sign = -1 end
+  local exponent = (string.byte(data, 4) % 128) * 2 +
+                   math.floor(string.byte(data, 3) / 128)
+  if exponent == 0 then return 0 end
+  mantissa = (math.ldexp(mantissa, -23) + 1) * sign
+  return math.ldexp(mantissa, exponent - 127)
+end
+
+--[[
+  Method: readDouble
+  Reads a double.
+    
+  Returns: (LuaNumber) double
+]]
+function binaryReader:readDouble ()
+  local data = self:readBytes(8)
+  local sign = 1
+  local mantissa = string.byte(data, 7) % 16
+  for i = 6, 1, -1 do mantissa = mantissa * 256 + string.byte(data, i) end
+  if string.byte(data, 8) > 127 then sign = -1 end
+  local exponent = (string.byte(data, 8) % 128) * 16 +
+                   math.floor(string.byte(data, 7) / 16)
+  if exponent == 0 then return 0 end
+  mantissa = (math.ldexp(mantissa, -52) + 1) * sign
+  return math.ldexp(mantissa, exponent - 1023)
 end
 
 return binaryReader
