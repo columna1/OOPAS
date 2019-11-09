@@ -97,4 +97,80 @@ function binaryReader:readByte ()
   return self.readBytes(1)[1]
 end
 
+--[[
+  Method: readBoolean
+  Reads a boolean.
+
+  Returns: (boolean) result
+]]
+function binaryReader:readBoolean ()
+  return (self:readByte() ~= 0)
+end
+
+--[[
+  Method: readLong
+  Reads a long.
+
+  Returns: (LuaNumber) long
+]]
+function binaryReader:readLong ()
+  local data = self:readBytes(8)
+  local total = 0
+  for i=1, 8 do
+    total = total + bit.lshift(data[i], 8*i)
+  end
+  return total
+end
+
+--[[
+  Method: readInt
+  Reads an int.
+
+  Returns: (LuaNumber) int
+]]
+function binaryReader:readInt ()
+  local data = self:readBytes(4)
+  local total = 0
+  for i=1, 4 do
+    total = total + bit.lshift(data[i], 8*i)
+  end
+  return total
+end
+
+--[[
+  Method: readShort
+  Reads a short.
+
+  Returns: (LuaNumber) short
+]]
+function binaryReader:readShort ()
+  local data = self:readBytes(2)
+  local total = 0
+  for i=1, 2 do
+    total = total + bit.lshift(data[i], 8*i)
+  end
+  return total
+end
+
+--[[
+  Method: readULEB128
+  Reads a variable-length value (VLQ).
+
+  Returns: (LuaNumber) ULEB128
+]]
+function binaryReader:readULEB128()
+	local c = 0 -- Used to tell whether or not to read another byte.
+	local value = self:readByte() -- Get the first byte
+	if math.floor(value / 2 ^ 7) == 1 then -- Does a binary right shift by 7 to see if the last bit is on (aka continue reading the number)
+		value = value - 128 -- Negate that last bit
+		repeat
+			local c1 = self:readByte()      -- Get the next byte
+			c = math.floor( c1 / 2 ^ 7)     -- Find out if the number continues the next byte
+			if c == 1 then c1 = c1 -128 end -- If it does negate the last byte
+			value = c1 * 2 ^ 7 + value      -- Shift the current number to the left by 7 bits and then add the next byte
+		until c == 0                      -- Repeat if there is more to the value
+	end
+	return value
+end
+
 return binaryReader
