@@ -41,8 +41,8 @@ function unitTest:run ()
   local status, err = pcall(self.test)
   if (type(err) == "string" or err == false) then
     -- If something went wrong. Let the end-user know.
-    print(string.format(common.FMT_ERR_TEST_FAILED, self.testNum, tostring(err)))
-    return false
+    -- print(string.format(common.FMT_ERR_TEST_FAILED, self.testNum, tostring(err)))
+    return false, err
   end
 
   return true
