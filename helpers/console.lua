@@ -3,7 +3,7 @@
   Helps manage console related operations. Such as color coding and output.
     
   Methods:
-
+    (void) print (string format, ...) - Prints information to the console using string.format.
 ]]
 local console = {}
 
