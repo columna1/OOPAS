@@ -4,6 +4,8 @@
 
   Methods:
     (void) addTest ((function) testFunc) - Adds a new unit test.
+    (void) addTests ((function[]) testFuncs) - Adds a new group of unit tests.
+    (void) displayResults () - Displays results from runTests.
     (void) runTests () - Runs all tests in the pool and summarizes the results.
     
   Properties:
@@ -12,6 +14,7 @@
 ]]
 
 -- Imports
+local common = require("../constants/common")
 local console = require("../helpers/console")
 local unitTest = require("../unitTests/unitTest")
 local unitTestResult = require("../unitTests/unitTestResult")
@@ -23,8 +26,22 @@ local unitTestRunner = {}
 unitTestRunner.prototype = {}
 unitTestRunner.prototype.testsFailed = 0
 unitTestRunner.prototype.testsPassed = 0
-unitTestRunner.prototype.unitTests = {}
-unitTestRunner.prototype.unitTestResults = {}
+unitTestRunner.prototype.unitTests = common.NULL_OBJECT
+unitTestRunner.prototype.unitTestResults = common.NULL_OBJECT
+unitTestRunner.prototype.type = "unitTestRunner"
+
+--[[
+  Constructor: unitTestRunner
+  Ensures that unitTests and unitTestResults point to a unique table.
+]]
+function unitTestRunner.constructor (newObject)
+  newObject.unitTests = {}
+  newObject.unitTestResults = {}
+end
+
+local function percentage_format (value)
+  return math.floor((value * 100) + 0.5)
+end
 
 --[[
   Method: addTest 
@@ -39,6 +56,19 @@ function unitTestRunner:addTest (testFunc)
   })
 
   table.insert(self.unitTests, test)
+end
+
+--[[
+  Method: addTests
+  Adds an array of tests.
+    
+  Arguments:
+    (function[]) testFuncs
+]]
+function unitTestRunner:addTests (testFuncs)
+  for key, value in pairs(testFuncs) do
+    self:addTest(value)
+  end
 end
 
 --[[
@@ -61,6 +91,38 @@ function unitTestRunner:addTestResult (_unitTest, passed, testDuration, errorMes
   })
 
   table.insert(self.unitTestResults, testResult)
+end
+
+--[[
+  Method: displayResults
+  Displays the results.
+]]
+function unitTestRunner:displayResults ()
+  if (self.testsFailed == 0) then
+    print("All tests passed!")
+  else
+    -- Display # of tests passed
+    console.print(common.FMT_TESTS_PASSED, 
+      self.testsPassed, 
+      #self.unitTests, 
+      percentage_format(self.testsPassed / #self.unitTests))
+
+    -- Display # of tests failed
+    console.print(common.FMT_TESTS_FAILED,
+      self.testsFailed,
+      #self.unitTests,
+      percentage_format(self.testsFailed / #self.unitTests))
+
+    -- Display every error message
+    print("Error Messages: ")
+    for k, testResult in pairs(self.unitTestResults) do
+      if (testResult.passed == false) then
+        console.print(common.FMT_TEST_RESULT, 
+          testResult.unitTest.testNum,
+          testResult.errorMessage)
+      end
+    end
+  end
 end
 
 --[[
