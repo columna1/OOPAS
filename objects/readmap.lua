@@ -1,7 +1,9 @@
+
 --todo, silently fail and return an error message, don't stop the whole program from running
-local vec2 = require("vec2")
-local sliderCalc = require("slidercurves")
-local util = require("util")
+-- Imports
+local vec2 = require("../objects/vec2")
+local sliderCalc = require("../objects/slidercurves")
+local util = require("../helpers/util")
 local map = {}
 local prefile = {}
 

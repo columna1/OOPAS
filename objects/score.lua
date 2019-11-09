@@ -1,10 +1,11 @@
-local vec2 = require("vec2")
-local rps = require("replaystream")
-local curves = require("slidercurves")
+
+-- Imports
+local vec2 = require("../objects/vec2")
+local rps = require("../objects/replaystream")
+local curves = require("../objects/slidercurves")
 require("bit")
 require("util")
 --dbg = require("debugger")
-
 
 local score = {}
 local newScore = {}

@@ -1,6 +1,7 @@
 
+-- Imports
 local lzma = require("lzma")
-local reader = require("binRead")
+local reader = require("../objects/binRead")
 require("bit")
 
 --this is just a simple* file reader, more advanced things can be done with your own reader

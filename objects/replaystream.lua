@@ -1,5 +1,7 @@
-local readReplay = require("readreplay")
-local vec2 = require("vec2")
+
+-- Imports
+local readReplay = require("../objects/readreplay")
+local vec2 = require("../objects/vec2")
 require("util")
 require("bit")
 
