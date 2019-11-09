@@ -7,6 +7,16 @@
 ]]
 local console = {}
 
-
+--[[
+  Method: print
+  Prints information to the console using string.format.
+    
+  Arguments:
+    (string) format,
+    (vararg) variables
+]]
+function console.print (format, ...)
+  print(format.format(...))
+end
 
 return console
