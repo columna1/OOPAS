@@ -7,6 +7,9 @@ local common = {}
 common.NULL_OBJECT = {} -- Not-yet-defined objects, for explicitly defining null values.
 
 -- Error formats.
+common.FMT_TESTS_PASSED = "Total tests passed: %s/%s (%s%)"
+common.FMT_TESTS_FAILED = "Total tests failed: %s/%s (%s%)"
+common.FMT_TEST_RESULT = "  #%s: %s"
 common.FMT_ERR_TEST_FAILED = "Error running test #%s: %s"
 common.FMT_ERR_UNEXPECTED_KEY = "Unexpected key type: '%s' (%s)"
 
