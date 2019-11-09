@@ -1,3 +1,14 @@
+
+--[[
+	Method: string.split
+	Splits a string by a separator.
+		
+	Arguments:
+		(string) str
+		(string) sep
+
+	Returns: (string[]) strings
+]]
 function string.split (str,sep)
 	if type(str)=="number" or type(str)=="boolean" then
 		str = tostring(str) -- Convert the bad object to a string.
@@ -12,6 +23,14 @@ function string.split (str,sep)
 	return return_array
 end
 
+--[[
+	Method: printTable
+	Prints out a table.
+		
+	Arguments:
+		(table) tabl
+		(LuaNumber) wid = 1
+]]
 function printTable(tabl, wid)
 	if not wid then wid = 1 end
 	for i,v in pairs(tabl) do
@@ -29,12 +48,40 @@ function printTable(tabl, wid)
 	end 
 end
 
+--[[
+	Method: round
+	Rounds a number.
+		
+	Arguments:
+		(LuaNumber) a
+
+	Returns: (LuaNumber) rounded
+]]
 function round(a)
 	a = a * 100
 	a = a + 0.5
 	return math.floor(a)/100
 end
 
+--[[
+	Method: cull
+	Creates a new table based on a condition.
+	If not fun(tab[i]) then add it to the new table.
+		
+	Arguments:
+		(table) tab
+		(function) fun
+
+	Example:
+		local t = {1, 2, 3}
+		local condition = function (x) return (x == 2) end
+		local cull_t = cull(t, condition)
+
+		-- cull_t[1] == 1
+		-- cull_t[2] == 3
+
+	Returns: (table) newtab
+]]
 function cull(tab,fun)
 	local newtab = {}
 	for i = 1,#tab do
@@ -45,20 +92,38 @@ function cull(tab,fun)
 	return newtab
 end
 
+--[[
+	Method: average
+	Calculates the average value from a table.
+		
+	Arguments:
+		(LuaNumber[]) tab
+
+	Returns: (LuaNumber) average
+]]
 function average(tab)
-	t = 0
+	local t = 0
 	for i = 1,#tab do
 		t = t + tab[i]
 	end
 	return math.floor(((t/#tab)*100)+0.5)/100
 end
 
+--[[
+	Method: standardDeviation
+	Calculates the standard deviation from a table.
+		
+	Arguments:
+		(LuaNumber[]) tab
+
+	Returns: (LuaNumber) standardDeviation
+]]
 function standardDeviation(tab)
 	local t = 0
 	for i = 1,#tab do
 		t = t + tab[i]
 	end
-	mean = t/#tab
+	local mean = t/#tab
 	t = 0
 	for i = 1,#tab do
 		t = t + ((tab[i]-mean)^2)
