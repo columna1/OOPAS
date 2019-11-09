@@ -23,8 +23,8 @@ unitTest.prototype.type = "unitTest" -- Extension of type(o), use (type(o)=="tab
   Sets the testNum to the latest test number.
 ]]
 function unitTest.constructor (newObject)
-  newObject.TotalTests[0] = newObject.TotalTests[0] + 1
-  newObject.testNum = newObject.TotalTests[0]
+  newObject.TotalTests[1] = newObject.TotalTests[1] + 1
+  newObject.testNum = newObject.TotalTests[1]
 end
 
 --[[

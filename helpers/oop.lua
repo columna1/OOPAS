@@ -31,8 +31,10 @@ function oop.defineClass (tab)
         end
 
         -- Then, override any prototype values with the options specified.
-        for key, value in options do
-            newObject[key] = value
+        if (type(options) == "table") then
+            for key, value in pairs(options) do
+                newObject[key] = value
+            end
         end
 
         -- Then, add any class methods from tab.

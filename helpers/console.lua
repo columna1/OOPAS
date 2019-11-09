@@ -16,7 +16,7 @@ local console = {}
     (vararg) variables
 ]]
 function console.print (format, ...)
-  print(format.format(...))
+  print(format:format(...))
 end
 
 return console

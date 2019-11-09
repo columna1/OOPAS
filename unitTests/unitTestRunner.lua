@@ -16,6 +16,7 @@
 -- Imports
 local common = require("../constants/common")
 local console = require("../helpers/console")
+local oop = require("../helpers/oop")
 local unitTest = require("../unitTests/unitTest")
 local unitTestResult = require("../unitTests/unitTestResult")
 
